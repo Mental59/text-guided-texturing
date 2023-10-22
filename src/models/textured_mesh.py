@@ -11,6 +11,8 @@ import torch.nn.functional as F
 from loguru import logger
 from PIL import Image
 
+import wandb
+
 from .mesh import Mesh
 from .render import Renderer
 from src.configs.train_config import GuideConfig
@@ -354,6 +356,11 @@ class TexturedMeshModel(nn.Module):
             fp.write(f'illum 1 \n')
             fp.write(f'Ns 0.000000 \n')
             fp.write(f'map_Kd {name}albedo.png \n')
+
+        wandb.log({'final': {'mesh_obj': wandb.Object3D(obj_file)}})
+        wandb.log({'final': {'albedo': wandb.Image(colors)}})
+        with open(mtl_file, 'r') as fp:
+            wandb.log({'final': {'mesh_mtl': fp.read()}})
 
     def render(self, theta=None, phi=None, radius=None, background=None,
                use_meta_texture=False, render_cache=None, use_median=False, dims=None):

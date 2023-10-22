@@ -1,0 +1,12 @@
+log:
+  exp_name: car
+guide:
+  text: "old rusty car, {} view"
+  append_direction: True
+  shape_path: shapes/rusty_car.obj
+  texture_resolution: 512
+  shape_scale: 0.6
+  dy: 0.25
+  guidance_scale: 7.5
+optim:
+  seed: 3

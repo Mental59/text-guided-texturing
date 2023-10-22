@@ -1,0 +1,12 @@
+log:
+  exp_name: vase
+guide:
+  text: "vase, {} view"
+  append_direction: True
+  shape_path: shapes/vase.obj
+  texture_resolution: 1024
+  shape_scale: 0.6
+  dy: 0.25
+  guidance_scale: 7.5
+optim:
+  seed: 3

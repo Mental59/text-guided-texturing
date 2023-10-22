@@ -22,6 +22,8 @@ from src.stable_diffusion_depth import StableDiffusion
 from src.training.views_dataset import ViewsDataset, MultiviewDataset
 from src.utils import make_path, tensor2numpy
 
+import wandb
+
 
 class TEXTure:
     def __init__(self, cfg: TrainConfig):
@@ -138,10 +140,11 @@ class TEXTure:
         self.full_eval()
         logger.info('\tDone!')
 
-    def evaluate(self, dataloader: DataLoader, save_path: Path, save_as_video: bool = False):
+    def evaluate(self, dataloader: DataLoader, save_path: Path, save_as_video: bool = False, is_final = False):
         logger.info(f'Evaluating and saving model, painting iteration #{self.paint_step}...')
         self.mesh_model.eval()
         save_path.mkdir(exist_ok=True)
+        step = 'eval'
 
         if save_as_video:
             all_preds = []
@@ -153,16 +156,28 @@ class TEXTure:
             if save_as_video:
                 all_preds.append(pred)
             else:
-                Image.fromarray(pred).save(save_path / f"step_{self.paint_step:05d}_{i:04d}_rgb.jpg")
-                Image.fromarray((cm.seismic(normals[0, 0].cpu().numpy())[:, :, :3] * 255).astype(np.uint8)).save(
-                    save_path / f'{self.paint_step:04d}_{i:04d}_normals_cache.jpg')
+                rgb_image = Image.fromarray(pred)
+                normals_image =  Image.fromarray((cm.seismic(normals[0, 0].cpu().numpy())[:, :, :3] * 255).astype(np.uint8))
+
+                rgb_image.save(save_path / f"step_{self.paint_step:05d}_{i:04d}_rgb.jpg")
+                normals_image.save(save_path / f'{self.paint_step:04d}_{i:04d}_normals_cache.jpg')
+
                 if self.paint_step == 0:
                     # Also save depths for debugging
                     torch.save(depths[0], save_path / f"{i:04d}_depth.pt")
+                
+                self.log_image_wandb(rgb_image, f'rgb_step_{self.paint_step}', step)
+                self.log_image_wandb(rgb_image, f'normals_cache_step_{self.paint_step}', step)
 
         # Texture map is the same, so just take the last result
         texture = tensor2numpy(textures[0])
-        Image.fromarray(texture).save(save_path / f"step_{self.paint_step:05d}_texture.png")
+        texture_image = Image.fromarray(texture)
+        texture_image.save(save_path / f"step_{self.paint_step:05d}_texture.png")
+        
+        if save_as_video and is_final:
+            self.log_image_wanbd_final(texture_image, 'texture')
+        else:
+            self.log_image_wandb(texture_image, 'texture', step)
 
         if save_as_video:
             all_preds = np.stack(all_preds, axis=0)
@@ -172,12 +187,15 @@ class TEXTure:
                                                            quality=8, macro_block_size=1)
 
             dump_vid(all_preds, 'rgb')
+            if is_final:
+                self.log_video_wandb_final(all_preds, f'step_{self.paint_step:05d}_rgb', fps=25)
+
         logger.info('Done!')
 
     def full_eval(self, output_dir: Path = None):
         if output_dir is None:
             output_dir = self.final_renders_path
-        self.evaluate(self.dataloaders['val_large'], output_dir, save_as_video=True)
+        self.evaluate(self.dataloaders['val_large'], output_dir, save_as_video=True, is_final=True)
         # except:
         #     logger.error('failed to save result video')
 
@@ -479,8 +497,11 @@ class TEXTure:
                 tensor = cm.seismic(tensor.detach().cpu().numpy())[:, :, :3]
             else:
                 tensor = einops.rearrange(tensor, '(1) c h w -> h w c').detach().cpu().numpy()
-            Image.fromarray((tensor * 255).astype(np.uint8)).save(
-                self.train_renders_path / f'{self.paint_step:04d}_{name}.jpg')
+
+            pil_image = Image.fromarray((tensor * 255).astype(np.uint8))
+            pil_image.save(self.train_renders_path / f'{self.paint_step:04d}_{name}.jpg')
+            
+            self.log_image_wandb(pil_image, name, 'train')
 
     def log_diffusion_steps(self, intermediate_vis: List[Image.Image]):
         if len(intermediate_vis) > 0:
@@ -495,3 +516,19 @@ class TEXTure:
             Image.fromarray(
                 (einops.rearrange(tensor, '(1) c h w -> h w c').detach().cpu().numpy() * 255).astype(np.uint8)).save(
                 path)
+
+    def log_image_wandb(self, pil_image: Image, name: str, step: str):
+        wanbd_image = wandb.Image(pil_image, caption=f'{self.paint_step:04d}_{name}')
+        wandb.log({
+            f'{step}':{
+                f'{name}': wanbd_image
+            }
+        })
+
+    def log_image_wanbd_final(self, pil_image: Image, name: str):
+        wanbd_image = wandb.Image(pil_image, caption=name)
+        wandb.log({'final': {f'{name}': wanbd_image}})
+    
+    def log_video_wandb_final(self, frames, name: str, fps: int):
+        wanbd_video = wandb.Video(frames, fps=fps)
+        wandb.log({'final': {f'{name}': wanbd_video}})

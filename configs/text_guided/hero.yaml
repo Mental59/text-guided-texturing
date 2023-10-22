@@ -1,0 +1,8 @@
+log:
+  exp_name: hero
+guide:
+  text: "soldier of the second world war of the soviet army, 4K, hyper realistic, {} view"
+  append_direction: True
+  shape_path: shapes/Hero.obj
+optim:
+  seed: 3

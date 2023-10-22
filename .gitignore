@@ -7,3 +7,9 @@
 data/*
 logs/*
 .idea
+env/
+TOKEN
+experiments/
+cache/
+artifacts/
+shapes/
