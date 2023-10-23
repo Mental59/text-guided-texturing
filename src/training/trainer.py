@@ -181,14 +181,19 @@ class TEXTure:
 
         if save_as_video:
             all_preds = np.stack(all_preds, axis=0)
+            video_name = 'rgb'
 
             dump_vid = lambda video, name: imageio.mimsave(save_path / f"step_{self.paint_step:05d}_{name}.mp4", video,
                                                            fps=25,
                                                            quality=8, macro_block_size=1)
 
-            dump_vid(all_preds, 'rgb')
+            dump_vid(all_preds, video_name)
             if is_final:
-                self.log_video_wandb_final(all_preds, f'step_{self.paint_step:05d}_rgb', fps=25)
+                self.log_video_wandb_final(
+                    path=save_path / f"step_{self.paint_step:05d}_{video_name}.mp4",
+                    name=f'step_{self.paint_step:05d}_rgb',
+                    fps=25
+                )
 
         logger.info('Done!')
 
@@ -529,6 +534,6 @@ class TEXTure:
         wanbd_image = wandb.Image(pil_image, caption=name)
         wandb.log({'final': {f'{name}': wanbd_image}})
     
-    def log_video_wandb_final(self, frames, name: str, fps: int):
-        wanbd_video = wandb.Video(frames, fps=fps)
+    def log_video_wandb_final(self, path, name: str, fps: int):
+        wanbd_video = wandb.Video(path, fps=fps)
         wandb.log({'final': {f'{name}': wanbd_video}})
