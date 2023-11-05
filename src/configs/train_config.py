@@ -79,7 +79,7 @@ class OptimConfig:
     # Learning rate for projection
     lr: float = 1e-2 # learning rate for adam optimizer
     # For Diffusion model
-    min_timestep: float = 0.02 # U(0.02, 0.98) обозначает текущий шаг в процессе диффузии, через нихз потом идет процесс обратного распространения ошибки
+    min_timestep: float = 0.02 # U(0.02, 0.98) обозначает текущий шаг в процессе диффузии, через них потом идет процесс обратного распространения ошибки
     # For Diffusion model
     max_timestep: float = 0.98
     # For Diffusion model
