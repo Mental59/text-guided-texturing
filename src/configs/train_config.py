@@ -22,7 +22,7 @@ class RenderConfig:
     # Number of views to use
     n_views: int = 8
     # Theta value for rendering during training
-    base_theta:float = 60
+    base_theta:float = 60 # меняет наклон камеры по оси Х (чем больше значение тем ниже камера)
     # Additional views to use before rotating around shape
     views_before: List[Tuple[float,float]] = field(default_factory=list)
     # Additional views to use after rotating around shape
@@ -46,15 +46,15 @@ class GuideConfig:
     # A huggingface diffusion model to use
     diffusion_name: str = 'stabilityai/stable-diffusion-2-depth'
     # Scale of mesh in 1x1x1 cube
-    shape_scale: float = 0.6
+    shape_scale: float = 0.6 # how far the 3d model will be on the rendered image
     # height of mesh
-    dy: float = 0.25
+    dy: float = 0.25 # наклон модели
     # texture image resolution
-    texture_resolution: int = 1024
+    texture_resolution: int = 1024 # разрешение финальной текстуры
     # texture mapping interpolation mode from texture image, options: 'nearest', 'bilinear', 'bicubic'
     texture_interpolation_mode: str= 'bilinear'
     # Guidance scale for score distillation
-    guidance_scale: float = 7.5
+    guidance_scale: float = 7.5 # The higher the value, the more the image sticks to a given text input.
     # Use inpainting in relevant iterations
     use_inpainting: bool = True
     # The texture before editing
@@ -66,7 +66,7 @@ class GuideConfig:
     # Background image to use
     background_img: str = 'textures/brick_wall.png'
     # Threshold for defining refine regions
-    z_update_thr: float = 0.2
+    z_update_thr: float = 0.2 # регионы с меньшим значением будут откидываться
     # Some more strict masking for projecting back
     strict_projection: bool = True
 
@@ -77,13 +77,13 @@ class OptimConfig:
     # Seed for experiment
     seed: int = 0
     # Learning rate for projection
-    lr: float = 1e-2
+    lr: float = 1e-2 # learning rate for adam optimizer
     # For Diffusion model
-    min_timestep: float = 0.02
+    min_timestep: float = 0.02 # U(0.02, 0.98) обозначает текущий шаг в процессе диффузии, через нихз потом идет процесс обратного распространения ошибки
     # For Diffusion model
     max_timestep: float = 0.98
     # For Diffusion model
-    no_noise: bool = False
+    no_noise: bool = False # будет ли добавлять шум к латентным инпутам к модели
 
 
 @dataclass

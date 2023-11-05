@@ -10,3 +10,7 @@ guide:
   guidance_scale: 7.5
 optim:
   seed: 3
+render: 
+  base_theta: 60
+  train_grid_size: 512
+  eval_grid_size: 512
