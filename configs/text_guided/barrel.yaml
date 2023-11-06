@@ -4,13 +4,15 @@ guide:
   text: "barrel, {} view"
   append_direction: True
   shape_path: shapes/barrel.obj
-  texture_resolution: 1024
+  texture_resolution: 512
   shape_scale: 0.6
   dy: 0.25
   guidance_scale: 7.5
+  num_inference_steps: 20
+  fitting_mesh_colors_steps: 200
 optim:
   seed: 3
 render: 
   base_theta: 60
-  train_grid_size: 512
-  eval_grid_size: 512
+  train_grid_size: 1200
+  eval_grid_size: 1024

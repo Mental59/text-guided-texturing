@@ -69,7 +69,8 @@ class GuideConfig:
     z_update_thr: float = 0.2 # регионы с меньшим значением будут откидываться
     # Some more strict masking for projecting back
     strict_projection: bool = True
-
+    num_inference_steps: int = 50
+    fitting_mesh_colors_steps: int = 200
 
 @dataclass
 class OptimConfig:

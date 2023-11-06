@@ -182,17 +182,18 @@ class TEXTure:
         if save_as_video:
             all_preds = np.stack(all_preds, axis=0)
             video_name = 'rgb'
+            video_fps = 25
 
             dump_vid = lambda video, name: imageio.mimsave(save_path / f"step_{self.paint_step:05d}_{name}.mp4", video,
-                                                           fps=25,
+                                                           fps=video_fps,
                                                            quality=8, macro_block_size=1)
-
             dump_vid(all_preds, video_name)
+
             if is_final:
                 self.log_video_wandb_final(
-                    path=save_path / f"step_{self.paint_step:05d}_{video_name}.mp4",
+                    path=str(save_path / f"step_{self.paint_step:05d}_{video_name}.mp4"),
                     name=f'step_{self.paint_step:05d}_rgb',
-                    fps=25
+                    fps=video_fps
                 )
 
         logger.info('Done!')
@@ -297,7 +298,8 @@ class TEXTure:
                                                                     strength=1.0, update_mask=cropped_update_mask,
                                                                     fixed_seed=self.cfg.optim.seed,
                                                                     check_mask=checker_mask,
-                                                                    intermediate_vis=self.cfg.log.vis_diffusion_steps)
+                                                                    intermediate_vis=self.cfg.log.vis_diffusion_steps,
+                                                                    num_inference_steps=self.cfg.guide.num_inference_steps)
         self.log_train_image(cropped_rgb_output, name='direct_output')
         self.log_diffusion_steps(steps_vis)
 
@@ -469,7 +471,7 @@ class TEXTure:
 
         optimizer = torch.optim.Adam(self.mesh_model.get_params(), lr=self.cfg.optim.lr, betas=(0.9, 0.99),
                                      eps=1e-15)
-        for _ in tqdm(range(200), desc='fitting mesh colors'):
+        for _ in tqdm(range(self.cfg.guide.fitting_mesh_colors_steps), desc='fitting mesh colors'):
             optimizer.zero_grad()
             outputs = self.mesh_model.render(background=background,
                                              render_cache=render_cache)
@@ -534,6 +536,6 @@ class TEXTure:
         wanbd_image = wandb.Image(pil_image, caption=name)
         wandb.log({'final': {f'{name}': wanbd_image}})
     
-    def log_video_wandb_final(self, path, name: str, fps: int):
-        wanbd_video = wandb.Video(path, fps=fps)
+    def log_video_wandb_final(self, path: str, name: str, fps: int):
+        wanbd_video = wandb.Video(path)
         wandb.log({'final': {f'{name}': wanbd_video}})
