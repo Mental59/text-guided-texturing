@@ -8,9 +8,9 @@ from loguru import logger
 class RenderConfig:
     """ Parameters for the Mesh Renderer """
     # Grid size for rendering during painting
-    train_grid_size: int = 1200
+    train_grid_size: int = 1200 # Чем выше тем меньше "фиолетовых" артефактов, тем дольше процесс генерации
     # Grid size of evaluation
-    eval_grid_size: int = 1024
+    eval_grid_size: int = 1024 # Чем выше тем меньше "фиолетовых" артефактовб тем дольше процесс генерации
     # training camera radius range
     radius: float = 1.5
     # Set [0,overhead_range] as the overhead region
@@ -69,8 +69,8 @@ class GuideConfig:
     z_update_thr: float = 0.2 # регионы с меньшим значением будут откидываться
     # Some more strict masking for projecting back
     strict_projection: bool = True
-    num_inference_steps: int = 50
-    fitting_mesh_colors_steps: int = 200
+    num_inference_steps: int = 50 # если ставить меньше то изображения становятся синеватыми (недорисованными)
+    fitting_mesh_colors_steps: int = 200 # если ставить меньше то изображения становятся фиолетовыми
 
 @dataclass
 class OptimConfig:
@@ -79,9 +79,9 @@ class OptimConfig:
     seed: int = 0
     # Learning rate for projection
     lr: float = 1e-2 # learning rate for adam optimizer
-    # For Diffusion model
+    # For Diffusion model, ничего не меняет
     min_timestep: float = 0.02 # U(0.02, 0.98) обозначает текущий шаг в процессе диффузии, через них потом идет процесс обратного распространения ошибки
-    # For Diffusion model
+    # For Diffusion model, ничего не меняет
     max_timestep: float = 0.98
     # For Diffusion model
     no_noise: bool = False # будет ли добавлять шум к латентным инпутам к модели

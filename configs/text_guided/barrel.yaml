@@ -8,11 +8,14 @@ guide:
   shape_scale: 0.6
   dy: 0.25
   guidance_scale: 7.5
-  num_inference_steps: 20
+  num_inference_steps: 50
   fitting_mesh_colors_steps: 200
 optim:
   seed: 3
+  min_timestep: 0.02
+  max_timestep: 0.98
+  no_noise: false
 render: 
   base_theta: 60
-  train_grid_size: 1200
-  eval_grid_size: 1024
+  train_grid_size: 700
+  eval_grid_size: 512
