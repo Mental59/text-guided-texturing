@@ -78,7 +78,7 @@ class OptimConfig:
     # Seed for experiment
     seed: int = 0
     # Learning rate for projection
-    lr: float = 1e-2 # learning rate for adam optimizer
+    lr: float = 1e-2 # learning rate for adam optimizer, параметр подобран хорошо, если ставить меньше, то будут черные текстуры, если больше, то появляется зеленоватый оттенок
     # For Diffusion model, ничего не меняет
     min_timestep: float = 0.02 # U(0.02, 0.98) обозначает текущий шаг в процессе диффузии, через них потом идет процесс обратного распространения ошибки
     # For Diffusion model, ничего не меняет

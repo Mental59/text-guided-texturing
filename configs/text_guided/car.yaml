@@ -2,11 +2,20 @@ log:
   exp_name: car
 guide:
   text: "old rusty car, {} view"
-  append_direction: True
   shape_path: shapes/rusty_car.obj
+  append_direction: True
   texture_resolution: 1024
   shape_scale: 0.6
   dy: 0.25
-  guidance_scale: 7.5
+  guidance_scale: 15
+  num_inference_steps: 50
+  fitting_mesh_colors_steps: 200
 optim:
   seed: 3
+  min_timestep: 0.02
+  max_timestep: 0.98
+  no_noise: false
+render: 
+  base_theta: 60
+  train_grid_size: 2200
+  eval_grid_size: 2048

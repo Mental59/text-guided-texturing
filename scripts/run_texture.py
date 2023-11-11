@@ -17,9 +17,8 @@ def main(cfg: TrainConfig):
 
 
 def run_exp1(cfg: TrainConfig):
-    for train_grid_size, eval_grid_size in [(700, 512), (1200, 1024), (2200, 2048)]:
-        cfg.render.train_grid_size = train_grid_size
-        cfg.render.eval_grid_size = eval_grid_size
+    for guidance_scale in [4.0, 7.5, 10.0, 15.0]:
+        cfg.guide.guidance_scale = guidance_scale
         one_run(cfg)
 
 

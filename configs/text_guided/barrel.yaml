@@ -2,9 +2,9 @@ log:
   exp_name: barrel
 guide:
   text: "barrel, {} view"
-  append_direction: True
   shape_path: shapes/barrel.obj
-  texture_resolution: 512
+  append_direction: True
+  texture_resolution: 1024
   shape_scale: 0.6
   dy: 0.25
   guidance_scale: 7.5
@@ -17,5 +17,5 @@ optim:
   no_noise: false
 render: 
   base_theta: 60
-  train_grid_size: 700
-  eval_grid_size: 512
+  train_grid_size: 2200
+  eval_grid_size: 2048
